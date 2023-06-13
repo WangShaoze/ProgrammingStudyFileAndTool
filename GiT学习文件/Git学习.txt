@@ -1,0 +1,268 @@
+
+
+Git是什么？
+	版本控制工具
+如何安装？
+	sudo apt-get install git
+	如何验证是否安装成功？  键入 git  看是否出现相关命令
+
+如何对代码进行版本控制？
+	1.创建文件目录 :  mkdir Git_test
+	2.进入创建的目录文件：使用  git init  初始化仓库
+	3.将新增的文件加入工作区: git add demo.py 
+	4.提交文件的说明信息:  git commit -m '版本1.0-demo.py'
+		此时就会出现以下提示:
+			作者身份未知
+
+			*** 请告诉我您是谁。
+
+			运行
+
+			  git config --global user.email "you@example.com"
+			  git config --global user.name "Your Name"
+
+			来设置您账号的缺省身份标识。
+			如果仅在本仓库设置身份标识，则省略 --global 参数。
+
+			fatal: 无法自动探测邮件地址（得到 'xiowang@xiowang-Default-string.(none)'）
+	5.配置用户的身份信息:
+		git config --global user.email "2847832624@qq.com"
+	 	git config --global user.name "WangShaoze"
+	 	
+	6. 重试第4步骤: git commit -m '版本1.0-demo.py'  出现以下信息说明数据提交成功
+		[master （根提交） 4264289] 版本1.0-demo.py
+		 1 file changed, 6 insertions(+)
+		 create mode 100755 demo.py
+		 
+	 	
+	 7. 查看日志信息  git log
+		commit 426428962c092a0c707027ab5ddd31177d738574
+		Author: WangShaoze <2847832624@qq.com>
+		Date:   Sun May 21 18:44:02 2023 +0800
+
+		    版本1.0-demo.py
+	     查看日志信息时，需要简短显示: git log --pretty=oneline
+	     查看日志信息时，需要简短和带图显示:git log --graph --pretty=oneline
+
+	 8.修改文件后，重复
+	 	git add demo.py
+	 	git commit -m '版本1.1-demo.py'
+	 	git log
+	 			 	commit 62ada860fb7d5e6790ba5acaf48a5be662ca6454 (HEAD -> master)
+					Author: WangShaoze <2847832624@qq.com>
+					Date:   Sun May 21 19:19:07 2023 +0800
+
+					    版本1.1-demo.py
+					commit 426428962c092a0c707027ab5ddd31177d738574
+					Author: WangShaoze <2847832624@qq.com>
+					Date:   Sun May 21 18:44:02 2023 +0800
+
+					    版本1.0-demo.py
+
+	            这样就可以获得两个版本，每一个版本之间只会记录版本之间有差异的数据
+	            
+	 9.若想回到前一个版本或者前n个版本,这就是版本之间的数据回滚
+	 	git reset --hard HEAD^     // 一个^表示一个版本，即回到前一个版本
+		git reset --hard HEAD~n    // n=1时，表示到前一个版本；n=100时，表示回到前100个版本
+	     使用命令之后，再次查看日志，就会发现，数据已经回滚到，以前的样子了。
+	     	commit 426428962c092a0c707027ab5ddd31177d738574 (HEAD -> master)
+		Author: WangShaoze <2847832624@qq.com>
+		Date:   Sun May 21 18:44:02 2023 +0800
+
+		    版本1.0-demo.py
+
+	 10.如果还是想返回到刚刚的版本,那就是使用
+	 	git reset --hard 版本提交时的序列号(部分即可)
+	 	例如:
+	 	  git reset --hard 62ada860fb7d5e      ----> 这样就可以回到刚刚的那个1.1版本了
+	 	
+	 	分析: 说明在版本切换的时候，git 并不会将版本删除，只是控制版本的指针移动了
+	 		 	
+	 
+	 11. 查看自己的操作记录: 
+	 	git reflog
+	     我们可以看到自己对这个仓库所有的操作记录
+	     	62ada86 (HEAD -> master) HEAD@{0}: reset: moving to 62ada860fb7d5e
+		4264289 HEAD@{1}: reset: moving to HEAD~1
+		62ada86 (HEAD -> master) HEAD@{2}: reset: moving to 62ada860fb7d5e
+		4264289 HEAD@{3}: reset: moving to HEAD~1
+		62ada86 (HEAD -> master) HEAD@{4}: commit: 版本1.1-demo.py
+		4264289 HEAD@{5}: reset: moving to HEAD^
+		15a1624 HEAD@{6}: commit: 版本1.2-demo.py
+		4264289 HEAD@{7}: commit (initial): 版本1.0-demo.py
+
+	     想要回滚或者前进到那个版本就可以直接使用书序列号完成
+	     	git reset --hard 15a1624        // 可以直接回到  版本1.2-demo.py
+	  
+	  
+	  
+	  
+什么是Git的工作区和暂存区    和   Git 的一些基本操作？
+	1.工作区-----》Git_test
+	2.版本库(Repository)
+		工作区有一个隐藏目录.git,这个不是工作区，而是git的版本库
+		git的版本库里存了很多东西，其中最重要的就是stage(或者叫做index) 称为 缓存区，还有git为我们自动创建的第一个分支叫做 master ,
+		以及指向 master 的一个指针叫做 HEAD
+	 	
+	 	因为我的创建git版本库时，git自动为我们创建第一个分支master,所以，现在使用 git commit 就是往 master 分支上提交的更改。
+	3.管理修改
+		查看文件的状态:  git status
+		即文件是否被git跟踪管理了，下面就是新创建的一个文件，如果你对文件进行了修改，这个文件也会变成红色
+			位于分支 master
+			未跟踪的文件:
+			  （使用 "git add <文件>..." 以包含要提交的内容）
+				demo1.py
+
+			提交为空，但是存在尚未跟踪的文件（使用 "git add" 建立跟踪）
+		
+		若有多个文件没有被管理或是修改了多个文件,在 git add 文件1 文件2 文件3 文件n
+		git add demo.py demo1.py
+		
+		此时，使用 个git commit -m '版本1.3'  可以将多个文件作为一个版本
+		
+		注意: 在使用 git commit 前应该使用git add 将为再暂存的文件，添加到暂存区，在git commit 时，就不会造成数据没有被管理。
+	
+	4.撤销修改  
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ vim demo.py   # 修改
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ vim demo1.py  # 修改
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ git status
+
+		位于分支 master
+		尚未暂存以备提交的变更：
+		  （使用 "git add <文件>..." 更新要提交的内容）
+		  （使用 "git restore <文件>..." 丢弃工作区的改动）
+			修改：     demo.py
+			修改：     demo1.py
+
+		修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
+		
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ git add demo.py demo1.py   # 管理 demo.py demo1.py 的修改
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ git status
+		位于分支 master
+		要提交的变更：
+		  （使用 "git restore --staged <文件>..." 以取消暂存）
+			修改：     demo.py
+			修改：     demo1.py
+
+		# 假设现在需要丢弃工作区的改动
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ git restore --staged demo.py demo1.py
+		xiowang@xiowang-Default-string:~/桌面/Git_test$ git status
+		位于分支 master
+		尚未暂存以备提交的变更：
+		  （使用 "git add <文件>..." 更新要提交的内容）
+		  （使用 "git restore <文件>..." 丢弃工作区的改动）
+			修改：     demo.py
+			修改：     demo1.py
+
+		修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
+		
+		
+		# 假设现在需要丢弃工作区的改动的内容 ------- 需要在 git add 之前----可以将内容回滚到上一次保存的内容
+		git checkout -- demo1.py
+		
+		
+		总结:
+			场景1: 还没有提交缓存区  git checkout -- 文件名    // 可以将内容回滚到上一次保存的内容
+			场景2: 已经提交到缓存区  git reset HEAD 文件名     // 可以将内容回滚到为提交奥状体，在使用   场景1 的方法，回滚文件数据
+			场景3: 已经使用  commit 提交了版本，那就直接使用版本回退即可
+	5.对比文件的不同
+		(1).修改文件之后，对比文件的不同
+		git diff 版本号 -- 文件名
+		git diff HEAD -- demo1.py
+		
+		(2).修改文件之后，并提交版本，对比两个版本中间的文件的不同
+		git diff 版本号1 版本号2 -- 文件名
+		git diff HEAD HEAD^ -- demo1.py
+		
+	6.删除文件
+		(1)  rm 文件名 
+			rm demo1.py
+		(2) git rm 文件名
+			git rm demo1.py
+		经过以上2个步骤删除文件之后，demo1.py就会被删除，如果需要恢复，可以使用以下命令：
+			使用 "git restore --staged <文件>..." 以取消暂存: git restore --staged demo1.py
+			在使用 "git checkout -- <文件名>..." 可以取消文件的删除: git checkout -- demo1.py
+		(3) git commit -m '版本1.5'       // 创建一个新的版本，就可以彻底删除，如果到这里还想恢复，只能回退版本，会丢失一些中途的修改
+		
+
+		
+Git 的分支管理？
+	master 是主分支，一般  HEAD指向 master
+	如果创建一个新的分支dev ，那么刚刚指向 master的指针 HEAD，就可以指向dev分支了 
+	
+	(1) 查看分支: git branch
+	(2) 创建并切换分支: git checkout -b dev
+		只是创建分支: git branch 分支名
+			创建一个叫做 dev 的分支: git branch dev
+	(3) 重新切换回到 master分支： git checkout master
+	         重新切换回到 dev 分支： git checkout dev
+	(4) 将dev分支上的数据，合并到master上:
+		1) 从dev 分支切回master分支
+		2）使用  git merge dev 即可将数据合并到master分支上
+		3) 此时，分支的合并是 快速合并模式(默认)，但是合并分支时，也不是每次都能顺利合并的，有时会产生冲突
+	(5) 删除分支: git branch -d 分支名
+		删除 dev 分支: git branch -d dev
+	
+	(6) 解决合并的冲突:
+		当分支在合并时，出现冲突，说明在另一个版本修改提交的此文件的信息不一致，需要同步后再次提交合并后就可以了成功解决冲突了。
+	(7) 不能使用快速合并，但是也没有冲突
+		启发分支上有文件提交了，但是本分支上也有新的文件提交了，合并时，git 不会使用 快速合并，也没有冲突，在完成其他文件的同步时，git会再次提交合并。
+
+	(8) 有的时候，能够使用快速合并模式，但是我们要求的是需要做一次提交及后在合并，就需要用到快速合并模式: git merge --no-ff -m '版本说明信息' 分支
+		如：新建一个dev分支，在dev中创建一个code.txt，切换回到master分支上，此时要求在合并之前做一次提交。
+			git merge --no-ff -m '版本1.10_将dev合并到主分支上' dev
+	(9) 修复bug分支
+		假如，现在你正在dev分支上工作，然后突然收到紧急任务去修复一个master中出现的bug代号001
+		1) 使用 git stash 保留 dev工作现场，分支切换到 master 分支
+		2) 创建 bug-001分支, 修改bug-001,完成之后 ，切换到 master 分支，使用 ‘禁止快速合并模式’ 将数据合并，删除bug-001分支
+		3）切换到 dev 分支, 使用 git stash pop 恢复工作现场，继续工作
+
+
+使用Github去远程管理自己的仓库？
+	1) 创建自己的仓库
+	2) 使用SSH拉取和推送文件？
+		1.0 需要使用SSH公钥？
+			1.1 在git本地： vim .gitconfig
+				内容是:  [user]
+						email = 2847832624@qq.com        -----> 注册Github时的邮箱
+						name = WangShaoze                -----> 注册Github时的用户名
+			1.2 使用命令: ssh-keygen -t rsa -C '2847832624@qq.com'
+			1.3 使用: cat /home/xiowang/.ssh/id_rsa.pub    查看并复制公钥:
+			1.4 到Github上，点击右上角的头像---> settings ----> SSH and GPG keys -----> 填写 Title 粘贴 公钥 创建即可
+		
+		2.0 克隆项目
+			git clone git@github.com:WangShaoze/pythonSkills.git
+			git clone git clone ssh://git@ssh.github.com:443/WangShaoze/pythonSkills.git
+			git clone git clone git@ssh.fastgit.org:WangShaoze/pythonSkills.git
+	 	3.0 推送分支 ： git push origin 分支名
+	 		      git push origin dev_xiowang 
+	 	4.0 设置本地的分支跟踪远程的分支:
+	 		git branch --set-upstream-to=origin/远程的分支 本地的分支
+	 		例如: git branch --set-upstream-to=origin/dev_xiowang dev_xiowang
+	 			分支 'dev_xiowang' 设置为跟踪来自 'origin' 的远程分支 'dev_xiowang'。
+	 		      	
+	 		      	xiowang@xiowang-Default-string:~/桌面/pythonSkills$ git status
+				位于分支 dev_xiowang
+				您的分支与上游分支 'origin/dev_xiowang' 一致。
+
+				无文件要提交，干净的工作区
+			再次，创建文件code.txt在本地的分支上提交，查看状态，输入git push同步
+		5.0 从远程分支上拉去远程分支上的代码: git pull origin 分支名称
+			git pull origin dev_xiowang
+			
+
+
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	
